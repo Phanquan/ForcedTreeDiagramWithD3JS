@@ -8,6 +8,7 @@ let force = d3.layout.force()
     .friction(0.9)
     .charge(-1100)
     .gravity(0.1)
+    .alpha(100)
     .size([width, height])
     .on('tick', tick)
 
@@ -88,6 +89,7 @@ function update() {
 
 //
 function tick(e) {
+    console.log(e)
     let kx = .4 * e.alpha
     let ky = 3.4 * e.alpha
     link.each(function(d) {
