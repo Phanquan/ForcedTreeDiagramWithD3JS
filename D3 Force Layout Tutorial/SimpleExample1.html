@@ -22,28 +22,28 @@
     <script src='../d3/d3.min.js'></script>
     <!-- <script src='http://d3js.org/d3.v3.min.js'></script> -->
     <script>
-
     // Define data agruments (nodes and links) for the layout
-    let graph = {
-	    "nodes": [
-		    { x: 100, y: 100, name: 'A-0', fixed: true }, 
-		    { x: 400, y: 200, name: 'B-1', fixed: true }, 
-		    { x: 400, y: 400, name: 'C-2', fixed: true }
-	    ],
 
-	    "links": [	
-		    { source: 0, target: 1 },
-		    { source: 0, target: 2 }, 
-		    { source: 1, target: 2 }
-	    ]
+    	let graph = {
+	    	"nodes": [
+			    { x: 100, y: 100, name: 'A-0', fixed: true }, 
+			    { x: 400, y: 200, name: 'B-1', fixed: true }, 
+			    { x: 400, y: 400, name: 'C-2', fixed: true }
+	    	],
+
+	    	"links": [	
+			    { source: 0, target: 1 },
+			    { source: 0, target: 2 }, 
+			    { source: 1, target: 2 }
+	    	]
 	}
 
-	let nodes = graph.nodes
-	let links = graph.links
+    let nodes = graph.nodes
+    let links = graph.links
 
-	//define width and height of svg 
+    //define width and height of svg 
     const width = 640,
-    	  height = 480
+        height = 480
 
     //create svg element
     let svg = d3.select('body').append('svg')
@@ -57,7 +57,6 @@
         .links(links) //the svg of links
         .linkDistance(100) //link distance between 2 nodes aka the link length
         .on('tick', tick) // call to tick funtion()
-        .start() //start the force
 
     // create the link svg with data of links
     let link = svg.selectAll('.link')
@@ -76,12 +75,14 @@
         .attr('class', 'node')
         .call(force.drag) //try it !
 
-    nodeEnter.append('text') 
+    nodeEnter.append('text')
         .attr('dx', '-0.75em') //we can use css to get rip of this attr
         .attr('dy', '0.35em')
         .text(function(d) {
             return d.name
         })
+
+    force.start() //start the force
 
     function tick() {
         // 'ontick' event will show you the layout while being created,
