@@ -4,9 +4,10 @@ let rootTree
 
 let force = d3.layout.force()
     .linkDistance(50)
+    .linkStrength(1)
+    .friction(0.9)
     .charge(-1100)
     .gravity(0.1)
-    .alpha(100)
     .size([width, height])
     .on('tick', tick)
 
