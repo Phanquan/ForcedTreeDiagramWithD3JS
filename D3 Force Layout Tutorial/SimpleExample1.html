@@ -22,21 +22,28 @@
     <script src='../d3/d3.min.js'></script>
     <!-- <script src='http://d3js.org/d3.v3.min.js'></script> -->
     <script>
-    const width = 640,
-    	  height = 480
 
     // Define data agruments (nodes and links) for the layout
-    let nodes = [
-	    { x: 100, y: 100, name: 'A-0', fixed: true }, 
-	    { x: 400, y: 200, name: 'B-1', fixed: true }, 
-	    { x: 400, y: 400, name: 'C-2', fixed: true }
-    ]
+    let graph = {
+	    "nodes": [
+		    { x: 100, y: 100, name: 'A-0', fixed: true }, 
+		    { x: 400, y: 200, name: 'B-1', fixed: true }, 
+		    { x: 400, y: 400, name: 'C-2', fixed: true }
+	    ],
 
-    let links = [	
-	    { source: 0, target: 1 },
-	    { source: 0, target: 2 }, 
-	    { source: 1, target: 2 }
-    ]
+	    "links": [	
+		    { source: 0, target: 1 },
+		    { source: 0, target: 2 }, 
+		    { source: 1, target: 2 }
+	    ]
+	}
+
+	let nodes = graph.nodes
+	let links = graph.links
+
+	//define width and height of svg 
+    const width = 640,
+    	  height = 480
 
     //create svg element
     let svg = d3.select('body').append('svg')
@@ -79,10 +86,10 @@
         // 'ontick' event will show you the layout while being created,
         // in the orther hand,'onend' only show you the layout after it was 
         // created,thus,making a delay time.
-        //we can use transform attr instead of 2 cx and cy attrs
+        // we can use transform attr instead of 2 cx and cy attrs
         node.attr('transform', function(d) {
                 return `translate( ${d.x} , ${d.y} )`
-            }) //this okay too
+            }) //this's okay too
             // .attr('cx', function(d) { return d.x })  // still have the same 
             // .attr('cy', function(d) { return d.y }) //	result as above.
 
