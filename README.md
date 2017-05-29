@@ -120,7 +120,7 @@ selection.on("click", function(d) {
 });  
 ```
 
-## Phần I: Tạo một Force Layout với các nodes và links cơ bản:
+## Phần I: Tạo một Force Layout với các nodes và links cơ bản.
 
 Phần nãy sẽ hướng dẫn tạo một svg chứa các nodes và links nối các node. Source code ở trong phần d3 tutorial, file SimpleExample1.js
 
@@ -261,4 +261,4 @@ data là một đối tượng có dạng json, trong đó có 2 thuộc tính c
     }
 ```
 
-## Phần 2: 
+## Phần 2: Import file json bằng d3js và Viết hàm tạo links theo nodes trong data.
