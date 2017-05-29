@@ -5,6 +5,8 @@ Build a Tree Diagram with D3js Force Layout v3
 
 Trong bài sẽ mô tả từng bước cụ thể để có thể vẽ nên một force layout có dạng cây (Forced-layout Tree Diagram).
 
+![TheTree](./images/treeDiagram.png)
+
 ## D3JS Force Layout là gì ?
 
 Force layout là một đồ thị vector có hướng linh hoạt sử dụng tích phân để giả lập các định luật vật lý.Vd dụ như thuộc tính pseudo-gravity để giữ các node ở trung tâm của vùng hiển thị, hay fixed-distance để cố định hình học của link,ngoài ra ta còn có thể tạo ra các 'tick' event đặc biệt thông qua các tọa độ x và y của nodes.
