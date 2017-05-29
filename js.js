@@ -92,7 +92,8 @@ function tick(e) {
     console.log(e)
     let kx = .4 * e.alpha
     let ky = 3.4 * e.alpha
-    link.each(function(d) {
+    link
+        .each(function(d) {
             d.target.x += (d.source.x - d.target.x) * kx
             d.target.y += (d.source.y + 75 - d.target.y) * ky
         })
