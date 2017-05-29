@@ -67,18 +67,18 @@ Không nên nhầm lẫn 'gravity' là trọng tâm gia tốc hay trọng lực 
 #### force.nodes([nodes]):  
 
 Tham số nodes đưa vào thường dạng mảng các đối tượng node có thuộc tính như sau:  
-	* index: vị trí của node trong mảng.
-	* x: tọa độ x của node.
-	* y: tọa độ y của node.
-	* px: tọa độ x vị trí của node ở trước.
-	* py: tọa độ y vị trí của node ở trước.
-	* fixed: định nghĩa xem node có bị cố định hay không, dạng boolean.
-	* weight: weight của node.  
+	* index: vị trí của node trong mảng.  
+	* x: tọa độ x của node.  
+	* y: tọa độ y của node.  
+	* px: tọa độ x vị trí của node ở trước.  
+	* py: tọa độ y vị trí của node ở trước.  
+	* fixed: định nghĩa xem node có bị cố định hay không, dạng boolean.  
+	* weight: weight của node.   
 
 #### force.links([links]):  
 
 Tham số links đưa vào có dạng mảng các link giữa các node, có thuộc tính như sau:  
-	* source: node nguồn.
-	* target: node đích.  
+	* source: node nguồn.  
+	* target: node đích.    
 
 #### force.start():
