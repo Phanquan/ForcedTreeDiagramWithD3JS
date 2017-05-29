@@ -122,7 +122,7 @@ selection.on("click", function(d) {
 
 Phần nãy sẽ hướng dẫn tạo một svg chứa các nodes và links nối các node. Source code ở trong phần d3 tutorial, file SimpleExample1.js
 
-!['example1'](../images/nodes-and-links.png)
+!['example1'](./images/nodes-and-links.png)
 
 
 
