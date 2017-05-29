@@ -122,9 +122,13 @@ selection.on("click", function(d) {
 
 Phần nãy sẽ hướng dẫn tạo một svg chứa các nodes và links nối các node. Source code ở trong phần d3 tutorial, file SimpleExample1.js
 
+![example1](../images/nodes-and-links.png)
+
+
+
 #### Bước 1: Khởi tạo data dạng json
 
-dât là một đối tượng có dạng json, trong đó có 2 thuộc tính chính là nodes và links, sau này ta chỉ cần nodes còn link sẽ tạo hàm để tự động nối tới nodes.  
+data là một đối tượng có dạng json, trong đó có 2 thuộc tính chính là nodes và links, sau này ta chỉ cần nodes còn link sẽ tạo hàm để tự động nối tới nodes.  
 
 ```javascript
     let graph = {
@@ -135,14 +139,16 @@ dât là một đối tượng có dạng json, trong đó có 2 thuộc tính c
 	    ],
 
 	    "links": [	
-		    { source: 0, target: 1 },
-		    { source: 0, target: 2 }, 
-		    { source: 1, target: 2 }
+		    { source: 0, target: 1 }, // link 1
+		    { source: 0, target: 2 }, // link 2
+		    { source: 1, target: 2 }  // link 3
 	    ]
 	}
 ```
 
 Về mặt logic,ta sẽ thấy các node có tọa độ x,y, thuộc tính name và fixed cùng với các link nối với các node có index là 0->1 , 0->2 và 1->2.  
+
+Với hình trên, ta sẽ nối node A với node B thông qua graph.links[0] hay link 1
 
 #### Bước 2: Khởi tạo width và height cùng với svg tổng
 
