@@ -130,7 +130,7 @@ Phần nãy sẽ hướng dẫn tạo một svg chứa các nodes và links nố
 
 #### Bước 1: Khởi tạo data dạng json
 
-data là một đối tượng có dạng json, trong đó có 2 thuộc tính chính là nodes và links, sau này ta chỉ cần nodes còn link sẽ tạo hàm để tự động nối tới nodes.  
+data là một đối tượng có dạng json, trong đó có 2 thuộc tính chính là nodes và links, sau này đối với cây tập tin, ta chỉ cần nodes còn link sẽ tạo hàm để tự động nối tới nodes.  
 
 ```javascript
     let graph = {
@@ -152,7 +152,7 @@ data là một đối tượng có dạng json, trong đó có 2 thuộc tính c
 
 - Với hình trên, ta sẽ nối node A với node B thông qua graph.links[0] hay link 1, tương tự, nối nốt A và C thông qua link 2,nốt B và C thông qua link 3
 
-- Khi có nhiều node hơn, ta sẽ có càng nhiều link để nối các nốt với nhau, không nhất thiết phải có 1 link giữa 2 node,thực ra riêng 2 node có thể vẽ 2 link rồi (0->1 và 1->0) nên đối với data lớn,ta không cần thiết phải khai báo links trong data mà chỉ cần viết hàm đệ quy trỏ tới nodes rồi gán links mà thôi.
+- Khi có nhiều node hơn, ta sẽ có càng nhiều link để nối các nốt với nhau, không nhất thiết phải có 1 link giữa 2 node,thực ra riêng 2 node có thể vẽ 2 link rồi (0->1 và 1->0) nên đối với cây tập tin lớn,ta không cần thiết phải khai báo links trong data mà chỉ cần viết hàm đệ quy trỏ tới nodes rồi gán links mà thôi.
 
 - Thuộc tính 'fixed' như đã nói ở trên sẽ cố định các node và kéo dài link khi ta drag-drop, khi bỏ fixed đi thì link sẽ co giãn về đúng kích thước linkDistance đã khai báo và kéo theo node tới vị trí trọng tâm.
 
@@ -261,4 +261,4 @@ data là một đối tượng có dạng json, trong đó có 2 thuộc tính c
     }
 ```
 
-## Phần 2: Import file json bằng d3js và Viết hàm tạo links theo nodes trong data.
+## Phần 2: Cấu trúc data json của cây tập tin và Import file json bằng d3js.
