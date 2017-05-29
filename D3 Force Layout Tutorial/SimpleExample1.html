@@ -75,8 +75,9 @@
         .attr('r', 20)
         .attr('class', 'node')
         .call(force.drag) //try it !
-    nodeEnter.append('text')
-        .attr('dx', '-0.75em')
+
+    nodeEnter.append('text') 
+        .attr('dx', '-0.75em') //we can use css to get rip of this attr
         .attr('dy', '0.35em')
         .text(function(d) {
             return d.name
