@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Force Layout Example 1</title>
+    <style>
+    .node {
+        fill: #ccc;
+        stroke: #fff;
+        stroke-width: 2px;
+    }
+    
+    .link {
+        stroke: #777;
+        stroke-width: 2px;
+    }
+    </style>
+</head>
+
+<body>
+    <script src='../d3/d3.min.js'></script>
+    <!-- <script src='http://d3js.org/d3.v3.min.js'></script> -->
+    <script>
+    const width = 640
+    const height = 480
+
+    // Define data agruments (nodes and links) for the layout
+    let nodes = [{
+        x: 50,
+        y: 50,
+        name: 'A-0',
+        fixed: true
+    }, {
+        x: 400,
+        y: 200,
+        name: 'B-1',
+        fixed: true
+    }, {
+
+        x: 400,
+        y: 400,
+        name: 'C-2',
+        fixed: true
+    }]
+
+    let links = [{
+        source: 2,
+        target: 0
+    }, {
+        source: 1,
+        target: 0
+    }, {
+        source: 2,
+        target: 1
+    }]
+
+    //create svg element
+    let svg = d3.select('body').append('svg')
+        .attr('width', width)
+        .attr('height', height)
+
+    // create the force layout
+    let force = d3.layout.force()
+        .size([width, height])
+        .nodes(nodes) //the svg of nodes
+        .links(links) //the svg of links
+        .linkDistance(100) //link distance between 2 nodes aka the link length
+        .on('tick', tick) // call to tick funtion()
+        .start() //start the force
+
+    // create the link svg with data of links
+    let link = svg.selectAll('.link')
+        .data(links)
+        .enter().append('line')
+        .attr('class', 'link')
+
+    // create the node svg with data of nodes
+    // and calls to a method drag that allows you to drag the nodes
+    let node = svg.selectAll('.node').data(nodes)
+    let nodeEnter = node.enter().append('g')
+
+    // Create 'cirle' and 'text' elements are children of 'g' element
+    nodeEnter.append('circle')
+        .attr('r', 20)
+        .attr('class', 'node')
+        .call(force.drag) //try it !
+    nodeEnter.append('text')
+        .attr('dx', '-0.75em')
+        .attr('dy', '0.35em')
+        .text(function(d) {
+            return d.name
+        })
+
+    function tick() {
+        // 'ontick' event will show you the layout while being created,
+        // in the orther hand,'onend' only show you the layout after it was 
+        // created,thus,making a delay time.
+        //we can use transform attr instead of 2 cx and cy attrs
+        node.attr('transform', function(d) {
+                return `translate( ${d.x} , ${d.y} )`
+            }) //this okay too
+            // .attr('cx', function(d) { return d.x })  // still have the same 
+            // .attr('cy', function(d) { return d.y }) //	result as above.
+
+        link.attr('x1', function(d) {
+                return d.source.x
+            })
+            .attr('y1', function(d) {
+                return d.source.y
+            })
+            .attr('x2', function(d) {
+                return d.target.x
+            })
+            .attr('y2', function(d) {
+                return d.target.y
+            })
+
+    }
+    </script>
+</body>
+
+</html>
