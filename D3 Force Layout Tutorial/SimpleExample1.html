@@ -57,7 +57,7 @@
         .links(links) //the svg of links
         .linkDistance(100) //link distance between 2 nodes aka the link length
         .on('tick', tick) // call to tick funtion()
-
+    	.start() //start the force
     // create the link svg with data of links
     let link = svg.selectAll('.link')
         .data(links)
@@ -68,12 +68,12 @@
     // and calls to a method drag that allows you to drag the nodes
     let node = svg.selectAll('.node').data(nodes)
     let nodeEnter = node.enter().append('g')
+        .call(force.drag) //try it !
 
     // Create 'cirle' and 'text' elements are children of 'g' element
     nodeEnter.append('circle')
         .attr('r', 20)
         .attr('class', 'node')
-        .call(force.drag) //try it !
 
     nodeEnter.append('text')
         .attr('dx', '-0.75em') //we can use css to get rip of this attr
@@ -82,7 +82,7 @@
             return d.name
         })
 
-    force.start() //start the force
+
 
     function tick() {
         // 'ontick' event will show you the layout while being created,
