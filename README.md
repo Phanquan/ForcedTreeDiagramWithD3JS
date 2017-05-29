@@ -118,11 +118,11 @@ selection.on("click", function(d) {
 });  
 ```
 
-## Tạo một Force Layout với các nodes và links cơ bản:
+## Phần I: Tạo một Force Layout với các nodes và links cơ bản:
 
 Phần nãy sẽ hướng dẫn tạo một svg chứa các nodes và links nối các node. Source code ở trong phần d3 tutorial, file SimpleExample1.js
 
-!['example1'](./images/nodes-and-links.png)
+![example1](./images/nodes-and-links.png)
 
 
 
@@ -146,11 +146,18 @@ data là một đối tượng có dạng json, trong đó có 2 thuộc tính c
 	}
 ```
 
-Về mặt logic,ta sẽ thấy các node có tọa độ x,y, thuộc tính name và fixed cùng với các link nối với các node có index là 0->1 , 0->2 và 1->2.  
+- Về mặt logic,ta sẽ thấy các node có tọa độ x,y, thuộc tính name và fixed cùng với các link nối với các node có index là 0->1 , 0->2 và 1->2.  
 
-Với hình trên, ta sẽ nối node A với node B thông qua graph.links[0] hay link 1
+- Với hình trên, ta sẽ nối node A với node B thông qua graph.links[0] hay link 1, tương tự, nối nốt A và C thông qua link 2,nốt B và C thông qua link 3
 
+- Khi có nhiều node hơn, ta sẽ có càng nhiều link để nối các nốt với nhau, không nhất thiết phải có 1 link giữa 2 node,thực ra riêng 2 node có thể vẽ 2 link rồi (0->1 và 1->0) nên đối với data lớn,ta không cần thiết phải khai báo links trong data mà chỉ cần viết hàm đệ quy trỏ tới nodes rồi gán links mà thôi.
+
+- Thuộc tính 'fixed' như đã nói ở trên sẽ cố định các node và kéo dài link khi ta drag-drop, khi bỏ fixed đi thì link sẽ co giãn về đúng kích thước linkDistance đã khai báo và kéo theo node tới vị trí trọng tâm.
+
+- Thuộc tính name sẽ giúp ta viết thẻ text để gán tên cho node, ngoài ra ta còn có thể cho thêm các thuộc tính như size để vẽ bán kính hay color để vẽ màu etc...
 #### Bước 2: Khởi tạo width và height cùng với svg tổng
+
+- Hãy thử xóa thuộc tính fixed để kiểm tra.
 
 ```javascript
 	//định nghĩa width và heith cho svg
@@ -194,16 +201,19 @@ Với hình trên, ta sẽ nối node A với node B thông qua graph.links[0] h
     let node = svg.selectAll('.node')
     	.data(nodes) //gán data nodes
     
-    //
+    // tạo nodeEnter vẽ ra thẻ g là thẻ cha
     let nodeEnter = node
     	.enter() //chạy vào thẻ đã gán data
     	.append('g') //tạo ra các thẻ cha là g
+        .call(force.drag) 
+        //gọi tới force.drag để gán hành vi drag-drop cho thẻ g
+	// là thẻ cha của text và circle ở dưới
 
     // trong thẻ g tạo ra thẻ circle là các hình tròn
     nodeEnter.append('circle')
         .attr('r', 20) //gán bán kính bằng 20
         .attr('class', 'node') //gán class
-        .call(force.drag) //gọi tới force.drag để gán hành vi drag-drop cho node
+
     // trong thẻ g tạo ra thẻ text để điền name của data
     nodeEnter.append('text') 
         .attr('dx', '-0.75em') //còn có thể bỏ attr này bằng CSS
@@ -249,3 +259,4 @@ Với hình trên, ta sẽ nối node A với node B thông qua graph.links[0] h
     }
 ```
 
+## Phần 2: 
