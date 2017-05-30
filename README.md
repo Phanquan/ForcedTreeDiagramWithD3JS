@@ -174,7 +174,7 @@ data là một đối tượng có dạng json, trong đó có 2 thuộc tính c
 
 #### Bước 3: Khởi tạo Force Layout
 
-* Khởi tạo Force Layout và các thuộc tính:
+* a - Khởi tạo Force Layout và các thuộc tính:
 
 ```javascript
     // Thiết lập giá trị nodes và links cho force layout
@@ -190,7 +190,7 @@ data là một đối tượng có dạng json, trong đó có 2 thuộc tính c
         .on('tick', tick) // gọi tới tick() function
 ```
 
-* Định nghĩa links và nodes cho Force Layout đã tạo trên:
+* b - Định nghĩa links và nodes cho Force Layout đã tạo trên:
 
 ```javascript
     // tạo link với data là mảng links
@@ -225,23 +225,24 @@ data là một đối tượng có dạng json, trong đó có 2 thuộc tính c
         })
 ```
 
-* Khai báo phương thức .start() để vẽ hình:
+* c - Khai báo phương thức .start() để vẽ hình:
 
 ```javascript
     force.start() //khởi động force layout với phương thức .start()
 ```
 
-* Gán listener tick() cho type 'tick':
+* d - Gán listener tick() cho type 'tick': (bước này ko nhất thiết là bước cuối)
 
 ```javascript    
     function tick() {
+    	// tick event chạy trong mỗi tick của mô phỏng và event đó sẽ update và hiển thị các nodes và links như code dưới đây
         // 'ontick' sẽ hiển thị layout ngay lập tức, còn 'onend' chỉ hiển thị 
         // sau khi layout đã hết động năng bên trong,làm ảnh hiển thị sau một 
         // thời gian ngắn.
         
         // ta có thể dùng attr transform thay cho cx và cy
         node.attr('transform', function(d) {
-                return `translate( ${d.x} , ${d.y} )`
+                return `translate( ${d.x} , ${d.y} )` //gán tọa độ x,y cho cx,cy
             }) //Vẫn ra kết quả tương tự trên
             // .attr('cx', function(d) { return d.x })
             // .attr('cy', function(d) { return d.y })
@@ -261,4 +262,211 @@ data là một đối tượng có dạng json, trong đó có 2 thuộc tính c
     }
 ```
 
-## Phần 2: Cấu trúc data json của cây tập tin và Import file json bằng d3js.
+## Phần 2: Cấu trúc data json của cây tập tin.
+
+Cấu trúc data của cây tập tin có dạng tương tự như phần trên, tuy nhiên một số node sẽ có thêm thuộc tính 'children' thể hiện đó là node cha và 'children' sẽ là một mảng các node con như sau: 
+
+```javascript
+{
+    "name": "A",
+    "root": "true",
+    "children": [{
+        "name": "B",
+        "children": [{
+            "name": "C",
+            "children": [
+                { "name": "D" },
+                { "name": "E", "children": [{ "name": "α" }, { "name": "η" }] },
+                { "name": "F" },
+                { "name": "G", "children": [{ "name": "β" }] }
+            ]
+        }, {
+            "name": "O",
+            "children": [
+                { "name": "P", "children": [{ "name": "ζ" }] },
+                { "name": "λ" }
+            ]
+        }]
+    }]
+}
+```
+
+Ta sẽ thấy node đầu tiên bao giờ cũng là node 'root' và các node có 'children' dạng mảng các node con. Để 'phẳng' hóa các node và thêm link dựa theo thuộc tính children, ta sẽ viết hàm đệ quy flatten để phẳng hóa nodes và d3.layout.tree([(nodes)]) để có thể thêm link dạng cây tập tin vào node.
+
+#### Phẳng hóa data - flatten nodes: 
+
+```javascript
+	function flatten(data) {
+	    //khởi tạo một mảng rỗng sẽ là kết quả trả về của function
+	    let nodes = [] 
+	    let i = 0 // khởi tạo id của node
+
+	    // hàm đệ quy phẳng hóa data
+	    function recurse(node) {
+
+	    	//nếu node có thuộc tính 'children' thì gọi hàm đệ quy 
+	    	//cho node đó để kiểm tra cho đến khi gặp node leaf (cuối)
+	        if (node.children) {
+	            node.children.forEach(recurse)
+	        }
+	        //nếu node ko có id thì thêm id và tăng i sau mỗi lần đệ quy
+	        if (!node.id) {
+	            node.id = ++i
+	        }
+	        //đẩy node vào mảng nodes kết quả
+	        nodes.push(node)
+	    }
+
+	    recurse(data) // đệ quy
+	    return nodes // kết quả trả về
+	}
+```
+
+Kết quả trả về sau khi phẳng hóa data, ta sẽ dùng nodes này để tạo link nối giữa node cha và node con:
+
+```javascript
+// mảng nodes bao gồm các object sau:
+let nodes = flatten(data) 
+
+nodes = 
+	[
+		{ name: "D", id: 1 },  
+		{ name: "D", id: 1 }, 
+		{ name: "α", id: 2 }, 
+		{ name: "η", id: 3 }, 
+		{ name: "E", children: Array[2], id: 4 },
+		{ name: "F", id: 5 }, 
+		{ name: "β", id: 6 }, 
+		{ name: "G", children: Array[1], id: 7 }, 
+		{ name: "C", children: Array[4], id: 8 }, 
+		{ name: "ζ", id: 9 }, 
+		{ name: "P", children: Array[1], id: 10 }, 
+		{ name: "λ", id: 11 }, 
+		{ name: "O", children: Array[2], id: 12 }, 
+		{ name: "B", children: Array[2], id: 13 }, 
+		{ name: "A", root: "true", children: Array[1], id: 14 } 
+	]
+```
+
+#### D3js Tree Layout:
+
+- Giống như các Layout khác nói chung và Force Layout nói riêng, đối tượng mà  Tree Layout (d3.layout.tree) sẽ trả về có dạng vừa là đối tượng, vừa là function. Thế nên ta có thể gọi tới Tree Layout giống như Force Layout và thêm các phương thức để thay đổi hành vi của nó. Trong phần này ta sẽ tập trung vào d3.layout.tree.link([nodes]) để tạo link cho các nodes.  
+
+- d3.layout.tree.link([nodes]): Đưa vào tham số nodes đã được phẳng hóa và giá trị trả về sẽ là các link nối giữa node cha với node con. Các node 'lá' (leaf node) hay nốt không có con sẽ không có link. Mỗi link là một đối tượng có 2 thuộc tính gồm source và target thể hiện node nguồn và node đích.
+
+- link trả về của nodes vd trên có dạng sau: 
+
+```javascript
+let links = d3.layout.tree.links(nodes)
+
+links = 
+	[
+		//... Object thể hiện 2 node nguồn và đích
+		{ source: Object, target: Object }
+		//...
+	]
+```
+
+### Vẽ Cây Tập tin:
+
+Phần này sẽ sử dụng lại file SimpleExample1 đã code ở trên. Ta chỉ cần thay đổi 1 số bước.
+
+#### Thay Đổi Bước 1:
+
+- Viết lại cấu trúc data:
+
+```javascript
+let data = {
+    "name": "A",
+    "root": "true",
+    "children": [{
+        "name": "B",
+        "children": [{
+            "name": "C",
+            "children": [
+                { "name": "D" },
+                { "name": "E", "children": [{ "name": "α" }, { "name": "η" }] },
+                { "name": "F" },
+                { "name": "G", "children": [{ "name": "β" }] }
+            ]
+        }, {
+            "name": "O",
+            "children": [
+                { "name": "P", "children": [{ "name": "ζ" }] },
+                { "name": "λ" }
+            ]
+        }]
+    }]
+}
+```
+
+- Thay đổi width và height của svg: 
+
+```javascript
+    //define width and height of svg 
+    const width = 1000,
+        height = 750
+```
+
+
+
+#### Thay đổi Bước 3-a:
+
+- a - Khởi tạo Force Layout và các thuộc tính: Ta sẽ thêm flatten function vào để phẳng hóa data.  
+
+```javascript
+
+    function flatten(data) {
+        //khởi tạo một mảng rỗng sẽ là kết quả trả về của function
+        let nodes = []
+        let i = 0 // khởi tạo id của node
+
+        // hàm đệ quy phẳng hóa data
+        function recurse(node) {
+
+            //nếu node có thuộc tính 'children' thì gọi hàm đệ quy 
+            //cho node đó để kiểm tra cho đến khi gặp node leaf (cuối)
+            if (node.children) {
+                node.children.forEach(recurse)
+            }
+            //nếu node ko có id thì thêm id và tăng i sau mỗi lần đệ quy
+            if (!node.id) {
+                node.id = ++i
+            }
+            //đẩy node vào mảng nodes kết quả
+            nodes.push(node)
+        }
+
+        recurse(data) // đệ quy
+        return nodes // kết quả trả về
+    }
+
+    // Thiết lập giá trị nodes và links cho force layout
+    let nodes = flatten(data)
+    let links = d3.layout.tree().links(nodes)
+
+    // Khởi tạo force layout
+    let force = d3.layout.force()
+        .size([width, height]) //đặt giá trị trọng tâm là w/2,h/2
+        .nodes(nodes) // gán nodes
+        .links(links) // gán links
+        .linkDistance(100) // đặt linkDistance
+        .on('tick', tick) // gọi tới tick() function
+```
+
+- Vậy là xong, ta sẽ có kết quả sau: 
+
+![Mesy Tree](./images/MessyTree.png)
+
+- Để cho cây dễ nhìn hơn, ta thêm các phương thức sau vào force layout:  
+
+```javascript
+let force = d3.layout.force()
+	//...
+        .linkDistance(100) // đặt chiều dài của link
+        .charge(-1000) // đặt độ giãn giữa các node
+        .gravity(0.1) //đặt gravity cho node
+        //...
+```
+
+![Better, no ?](./images/TidyTree.png)
