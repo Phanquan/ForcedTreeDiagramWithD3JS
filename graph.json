@@ -1,6 +1,6 @@
 {
     "name": "A",
-    "root": "null",
+    "root": "true",
     "children": [{
         "name": "B",
         "children": [{
@@ -12,15 +12,6 @@
                 { "name": "G", "children": [{ "name": "β" }] }
             ]
         }, {
-            "name": "H",
-            "children": [
-                { "name": "I" },
-                { "name": "K" },
-                { "name": "L" },
-                { "name": "M" },
-                { "name": "N" }
-            ]
-        }, {
             "name": "O",
             "children": [
                 { "name": "P", "children": [{ "name": "ζ" }] },
@@ -28,6 +19,4 @@
             ]
         }]
     }]
-
-
 }
