@@ -262,7 +262,7 @@ data là một đối tượng có dạng json, trong đó có 2 thuộc tính c
     }
 ```
 
-## Phần 2: Cấu trúc data json của cây tập tin.
+## Phần II: Cấu trúc data json của cây tập tin.
 
 Cấu trúc data của cây tập tin có dạng tương tự như phần trên, tuy nhiên một số node sẽ có thêm thuộc tính 'children' thể hiện đó là node cha và 'children' sẽ là một mảng các node con như sau: 
 
@@ -474,4 +474,7 @@ let force = d3.layout.force()
 
 - Ưu Điểm: Link đã nối các node con và node cha. Cây tập tin nhìn đỡ rối hơn.
 
-- Nhược Điểm: Theo data thì node A là nốt root tuy nhiên nhìn vào hình thì nó chẳng khác gì một node leaf, các mối qua hệ giữa các node cũng ko rõ ràng.
+- Nhược Điểm: Theo data thì node A là node root tuy nhiên nhìn vào hình thì nó chẳng khác gì một node leaf, các mối quan hệ giữa các node cũng ko rõ ràng.
+
+## Phần III: Định hình dạng cây cho Cây tập tin.
+
