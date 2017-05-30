@@ -468,5 +468,10 @@ let force = d3.layout.force()
         .gravity(0.1) //đặt gravity cho node
         //...
 ```
+#### Kết Quả:
 
 ![Better, no ?](./images/TidyTree.png)
+
+- Ưu Điểm: Link đã nối các node con và node cha. Cây tập tin nhìn đỡ rối hơn.
+
+- Nhược Điểm: Theo data thì node A là nốt root tuy nhiên nhìn vào hình thì nó chẳng khác gì một node leaf, các mối qua hệ giữa các node cũng ko rõ ràng.
