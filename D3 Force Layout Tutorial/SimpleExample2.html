@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Force Layout Example 1</title>
+    <style>
+    .node {
+        fill: #ccc;
+        stroke: #fff;
+        stroke-width: 2px;
+    }
+    
+    .link {
+        stroke: #777;
+        stroke-width: 2px;
+    }
+    </style>
+</head>
+
+<body>
+    <script src='../d3/d3.min.js'></script>
+    <!-- <script src='http://d3js.org/d3.v3.min.js'></script> -->
+    <script>
+    // Define data agruments (nodes and links) for the layout
+
+    let data = {
+        "name": "A",
+        "root": "true",
+        "children": [{
+            "name": "B",
+            "children": [{
+                "name": "C",
+                "children": [{
+                    "name": "D"
+                }, {
+                    "name": "E",
+                    "children": [{
+                        "name": "α"
+                    }, {
+                        "name": "η"
+                    }]
+                }, {
+                    "name": "F"
+                }, {
+                    "name": "G",
+                    "children": [{
+                        "name": "β"
+                    }]
+                }]
+            }, {
+                "name": "O",
+                "children": [{
+                    "name": "P",
+                    "children": [{
+                        "name": "ζ"
+                    }]
+                }, {
+                    "name": "λ"
+                }]
+            }]
+        }]
+    }
+
+    let nodes = flatten(data)
+    let links = d3.layout.tree().links(nodes)
+
+    console.log(nodes)
+    console.log(links)
+
+    //define width and height of svg 
+    const width = 1000,
+        height = 750
+
+    //create svg element
+    let svg = d3.select('body').append('svg')
+        .attr('width', width)
+        .attr('height', height)
+
+    // create the force layout
+    let force = d3.layout.force()
+        .size([width, height])
+        .nodes(nodes) //the svg of nodes
+        .links(links) //the svg of links
+        .linkDistance(75) //link distance between 2 nodes aka the link length
+        .on('tick', tick) // call to tick funtion()
+        .charge(-1100)
+        .gravity(0.1)
+        .start() //start the force
+        // create the link svg with data of links
+    let link = svg.selectAll('.link')
+        .data(links)
+        .enter().append('line')
+        .attr('class', 'link')
+
+    // create the node svg with data of nodes
+    // and calls to a method drag that allows you to drag the nodes
+    let node = svg.selectAll('.node').data(nodes)
+    let nodeEnter = node.enter().append('g')
+        .call(force.drag) //try it !
+
+    // Create 'cirle' and 'text' elements are children of 'g' element
+    nodeEnter.append('circle')
+        .attr('r', 20)
+        .attr('class', 'node')
+
+    nodeEnter.append('text')
+        .attr('dx', '-0.25em') //we can use css to get rip of this attr
+        .attr('dy', '0.35em')
+        .text(function(d) {
+            return d.name
+        })
+
+
+
+    function tick() {
+        // 'ontick' event will show you the layout while being created,
+        // in the orther hand,'onend' only show you the layout after it was 
+        // created,thus,making a delay time.
+        // we can use transform attr instead of 2 cx and cy attrs
+        node.attr('transform', function(d) {
+                return `translate( ${d.x} , ${d.y} )`
+            }) //this's okay too
+            // .attr('cx', function(d) { return d.x })  // still have the same 
+            // .attr('cy', function(d) { return d.y }) //       result as above.
+
+        link.attr('x1', function(d) {
+                return d.source.x
+            })
+            .attr('y1', function(d) {
+                return d.source.y
+            })
+            .attr('x2', function(d) {
+                return d.target.x
+            })
+            .attr('y2', function(d) {
+                return d.target.y
+            })
+    }
+
+    function flatten(data) {
+        //khởi tạo một mảng rỗng sẽ là kết quả trả về của function
+        let nodes = []
+        let i = 0 // khởi tạo id của node
+
+        // hàm đệ quy phẳng hóa data
+        function recurse(node) {
+
+            //nếu node có thuộc tính 'children' thì gọi hàm đệ quy 
+            //cho node đó để kiểm tra cho đến khi gặp node leaf (cuối)
+            if (node.children) {
+                node.children.forEach(recurse)
+            }
+            //nếu node ko có id thì thêm id và tăng i sau mỗi lần đệ quy
+            if (!node.id) {
+                node.id = ++i
+            }
+            //đẩy node vào mảng nodes kết quả
+            nodes.push(node)
+        }
+
+        recurse(data) // đệ quy
+        return nodes // kết quả trả về
+    }
+    </script>
+</body>
+
+</html>
