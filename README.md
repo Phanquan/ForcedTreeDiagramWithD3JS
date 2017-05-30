@@ -456,7 +456,7 @@ let data = {
 
 - Vậy là xong, ta sẽ có kết quả sau: 
 
-![Mesy Tree](./images/MessyTree.png)
+![Bad Tree](./images/MessyTree.png)
 
 - Để cho cây dễ nhìn hơn, ta thêm các phương thức sau vào force layout:  
 
@@ -476,5 +476,14 @@ let force = d3.layout.force()
 
 - Nhược Điểm: Theo data thì node A là node root tuy nhiên nhìn vào hình thì nó chẳng khác gì một node leaf, các mối quan hệ giữa các node cũng ko rõ ràng.
 
-## Phần III: Định hình dạng cây cho Cây tập tin.
+## Phần III: Định hình dạng cây có hướng cho Cây tập tin.
 
+- Quan hệ giữa nodes và links:
+
+Đây là quan hệ 2 chiều, khi ta drag-drop một node như đã code trên thì cả thuộc tính tọa độ (x,y) của cả node và link đều thay đổi, tức là ta thay đổi tọa độ (x,y) của node thì d3js sẽ tự động thay đổi tọa độ (x,y) nguồn hoặc đích so với node của link tương ứng và ngược lại.  
+
+Giả sử có 2 node và 1 link nối 2 node đó, bình thường khi hiển thị trên màn hình thì phương thức gravity sẽ kéo 2 node về giữa thẻ svg, còn hướng của link sẽ tính theo tọa độ vật lý của 2 node. Khi kéo và thả đều có thể thay đổi hướng của link.
+
+
+
+- Tham số force.alpha và ý nghĩa của nó:
