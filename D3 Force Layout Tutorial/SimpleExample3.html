@@ -3,7 +3,7 @@
 
 <head>
     <meta charset='utf-8'>
-    <title>Force Layout Example 1</title>
+    <title>Force Layout Example 3</title>
     <style>
     .node {
         fill: #ccc;
@@ -27,6 +27,7 @@
     let data = {
         "name": "A",
         "root": "true",
+        "fixed": "true",
         "children": [{
             "name": "B",
             "children": [{
@@ -61,16 +62,24 @@
             }]
         }]
     }
+    const width = 1000,
+        height = 750
+    data.x = width / 2
+    data.y = 50
 
     let nodes = flatten(data)
     let links = d3.layout.tree().links(nodes)
 
-    console.log(nodes)
-    console.log(links)
+    nodes.forEach(function (d,i) {
+    	console.log('node:',d)
+    })
+    links.forEach(function (d,i) {
+    	console.log('link:',d)
+    })
+
 
     //define width and height of svg 
-    const width = 1000,
-        height = 750
+
 
     //create svg element
     let svg = d3.select('body').append('svg')
@@ -113,7 +122,7 @@
 
 
 
-    function tick() {
+    function tick(e) {
         // 'ontick' event will show you the layout while being created,
         // in the orther hand,'onend' only show you the layout after it was 
         // created,thus,making a delay time.
@@ -124,7 +133,15 @@
             // .attr('cx', function(d) { return d.x })  // still have the same 
             // .attr('cy', function(d) { return d.y }) //       result as above.
 
-        link.attr('x1', function(d) {
+        link.each(function(d) {
+            let kx = 0.4 * e.alpha
+            let ky =  6 * e.alpha
+
+            d.target.x += (d.source.x - d.target.x) * kx
+            d.target.y += (d.source.y + 100 - d.target.y) * ky
+        })
+
+        .attr('x1', function(d) {
                 return d.source.x
             })
             .attr('y1', function(d) {
