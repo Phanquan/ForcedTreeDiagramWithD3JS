@@ -6,9 +6,8 @@ let force = d3.layout.force()
     .linkDistance(50)
     .linkStrength(1)
     .friction(0.9)
-    .charge(-1100)
+    .charge(-200)
     .gravity(0.1)
-    .alpha(100)
     .size([width, height])
     .on('tick', tick)
 
@@ -19,7 +18,7 @@ let svg = d3.select('.main-body').append('svg')
 let link = svg.selectAll('.link')
 let node = svg.selectAll('.node')
 
-d3.json('graph.json', function(error, json) {
+d3.json('flare.json', function(error, json) {
     if (error) throw error
 
     rootTree = json
@@ -63,13 +62,13 @@ function update() {
 
     nodeEnter.append('circle')
 
-    .attr('r', 15) //diagram of the circle
+    .attr('r', 4) //diagram of the circle
 
-    nodeEnter.append('text')
-        .attr('dy', '0.35em')
-        .text(function(d) {
-            return d.name
-        })
+    // nodeEnter.append('text')
+    //     .attr('dy', '0.35em')
+    //     .text(function(d) {
+    //         return d.name
+    //     })
 
     node.select('circle')
         .style('fill', function(d) {
@@ -89,7 +88,7 @@ function update() {
 
 //
 function tick(e) {
-    let kx = .4 * e.alpha
+    let kx = 0.4 * e.alpha
     let ky = 3.4 * e.alpha
     link
         .each(function(d) {
