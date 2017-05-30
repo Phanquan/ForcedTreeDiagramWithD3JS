@@ -4,9 +4,10 @@ let rootTree
 
 let force = d3.layout.force()
     .linkDistance(50)
-    .charge(-1000)
+    .linkStrength(1)
+    .friction(0.9)
+    .charge(-200)
     .gravity(0.1)
-    // .alpha(-5)
     .size([width, height])
     .on('tick', tick)
 
@@ -14,29 +15,28 @@ let svg = d3.select('.main-body').append('svg')
     .attr('width', width)
     .attr('height', height)
 
-let link = svg.selectAll('.link'),
-    node = svg.selectAll('.node')
+let link = svg.selectAll('.link')
+let node = svg.selectAll('.node')
 
-d3.json('graph.json', function(error, json) {
+d3.json('flare.json', function(error, json) {
     if (error) throw error
 
     rootTree = json
-    rootTree.root = true
     update()
 })
 
 function update() {
-    let nodes = flatten(rootTree),
-        links = d3.layout.tree().links(nodes)
+    let nodes = flatten(rootTree)
+    let links = d3.layout.tree().links(nodes)
 
+    rootTree.root = true
     rootTree.fixed = true
     rootTree.x = width / 2
-    rootTree.y = 120
+    rootTree.y = height / 2
 
 
     // Restart the force layout.
-    force
-        .nodes(nodes)
+    force.nodes(nodes)
         .links(links)
         .start()
 
@@ -45,17 +45,15 @@ function update() {
         return d.target.id
     })
 
-    link.exit().remove()
-
     link.enter().insert('line', '.node')
         .attr('class', 'link')
+
+    link.exit().remove()
 
     // Update nodes.
     node = node.data(nodes, function(d) {
         return d.id
     })
-
-    node.exit().remove()
 
     let nodeEnter = node.enter().append('g')
         .attr('class', 'node')
@@ -64,33 +62,41 @@ function update() {
 
     nodeEnter.append('circle')
 
-    .attr('r', 15)
+    .attr('r', 4.5) //diagram of the circle
 
-    nodeEnter.append('text')
-        .attr('style', 'font-size: 14px;')
-        .attr('dy', '0.35em')
-        .text(function(d) {
-            return d.name
-        })
+    // nodeEnter.append('text')
+    //     .attr('dy', '0.35em')
+    //     .text(function(d) {
+    //         return d.name
+    //     })
 
     node.select('circle')
         .style('fill', function(d) {
-            return d.root ? '#00ff1e' // root package
-                : d._children ? '#3182bd' // collapsed package
-                : d.children ? '#c6dbef' // expanded package
-                : '#fd8d3c' // leaf node
+            if (d.root) { // root package
+                return '#00ff1e'
+            } else if (d._children) { // collapsed package
+                return '#3182bd'
+            } else if (d.children) { // expanded package
+                return '#c6dbef'
+            } else {
+                return '#fd8d3c' // leaf node
+            }
         })
 
+    node.exit().remove()
 }
 
 //
 function tick(e) {
-    let kx = .4 * e.alpha
-    let ky = 3.4 * e.alpha
+    let kx = 0.5 * e.alpha
+    let ky = 5* e.alpha
     link
         .each(function(d) {
+            // console.log(d)
             d.target.x += (d.source.x - d.target.x) * kx
-            d.target.y += (d.source.y + 75 - d.target.y) * ky
+            d.target.y += (d.source.y + 100 - d.target.y) * ky
+            // d.source.y += ky; //weak tree
+            // d.target.y -= ky; //weak tree
         })
         .attr('x1', function(d) {
             return d.source.x
@@ -110,7 +116,7 @@ function tick(e) {
     })
 }
 
-// Toggle children on click.
+// add click event listener onto children .
 function click(d) {
     if (d3.event.defaultPrevented) return // ignore drag
     if (d.children) {
@@ -120,13 +126,13 @@ function click(d) {
         d.children = d._children
         d._children = null
     }
-    update()
+    update() //update data
 }
 
 // Returns a list of all nodes under the root.
 function flatten(rootTree) {
-    let nodes = [],
-        i = 0
+    let nodes = []
+    let i = 0
 
     function recurse(node) {
         if (node.children) {
