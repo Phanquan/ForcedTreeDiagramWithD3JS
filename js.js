@@ -89,7 +89,6 @@ function update() {
 
 //
 function tick(e) {
-    console.log(e)
     let kx = .4 * e.alpha
     let ky = 3.4 * e.alpha
     link
@@ -109,7 +108,6 @@ function tick(e) {
         .attr('y2', function(d) {
             return d.target.y
         })
-
 
     node.attr('transform', function(d) {
         return 'translate(' + d.x + ',' + d.y + ')'
