@@ -3,7 +3,7 @@
 
 <head>
     <meta charset='utf-8'>
-    <title>Force Layout Example 3</title>
+    <title>Force Layout Example 4</title>
     <style>
     .node {
         fill: #ccc;
@@ -134,9 +134,12 @@
             // .attr('cy', function(d) { return d.y }) //       result as above.
 
         link.each(function(d) {
+            let kx = 0.6 * e.alpha
             let ky = 6 * e.alpha
-            d.source.y -= ky //weak tree
-            d.target.y += ky //weak tree
+            // d.source.y -= ky //weak tree
+            // d.target.y += ky //weak tree
+            d.target.x += (d.source.x - d.target.x) * kx
+            d.target.y += (d.source.y + 100 - d.target.y) * ky
         })
 
         .attr('x1', function(d) {
