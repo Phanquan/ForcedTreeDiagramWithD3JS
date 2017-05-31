@@ -32,7 +32,7 @@ function update() {
     rootTree.root = true
     rootTree.fixed = true
     rootTree.x = width / 2
-    rootTree.y = height / 2
+    rootTree.y = height / 5
 
 
     // Restart the force layout.
