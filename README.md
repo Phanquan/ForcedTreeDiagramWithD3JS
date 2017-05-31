@@ -98,7 +98,8 @@ Gán 'listener' cho event được gọi tới dạng 'type' như 'start','end' 
 Đối tượng event (event object) được đưa vào các hàm 'listener' là các object sử dụng d3.dispatch() process. Mỗi event object có 2 thuộc tính: type và alpha. Trong đó type dạng string là 'start','tick' hay 'end' còn alpha là biến giảm tỏa nội tại,trong bài đây là biến quan trọng để tạo nên dạng cây cho layout.
 
 ```javascript
-Object { type: "tick", alpha: 0.005422585810406335 } //vd về một object event
+//vd về một object event với alpha giảm dần từ 0.9 -> 0.005
+Object { type: "tick", alpha: 0.005422585810406335 } 
 ```
 
 #### force.drag():
@@ -478,12 +479,145 @@ let force = d3.layout.force()
 
 ## Phần III: Định hình dạng cây có hướng cho Cây tập tin.
 
-- Quan hệ giữa nodes và links:
+#### Mối Quan hệ giữa nodes và links:
 
-Đây là quan hệ 2 chiều, khi ta drag-drop một node như đã code trên thì cả thuộc tính tọa độ (x,y) của cả node và link đều thay đổi, tức là ta thay đổi tọa độ (x,y) của node thì d3js sẽ tự động thay đổi tọa độ (x,y) nguồn hoặc đích so với node của link tương ứng và ngược lại.  
+Đây là quan hệ 2 chiều, khi ta drag-drop một node như đã code trên thì cả thuộc tính tọa độ (x,y) của cả node và link đều thay đổi, tức là ta thay đổi tọa độ (x,y) của node thì d3js sẽ tự động thay đổi tọa độ (x,y) nguồn hoặc đích so với node của link tương ứng và ngược lại do (x,y) của node,link là một.  
 
-Giả sử có 2 node và 1 link nối 2 node đó, bình thường khi hiển thị trên màn hình thì phương thức gravity sẽ kéo 2 node về giữa thẻ svg, còn hướng của link sẽ tính theo tọa độ vật lý của 2 node. Khi kéo và thả đều có thể thay đổi hướng của link.
+Giả sử có 2 node và 1 link nối 2 node đó, bình thường khi hiển thị trên màn hình thì phương thức gravity sẽ kéo 2 node về giữa thẻ svg, còn hướng của link sẽ tính theo tọa độ vật lý của 2 node,khi kéo và thả đều có thể thay đổi hướng của link. Để có thể hiển thị cây tập tin có hướng, ta có 2 cách, một là đặt tọa độ của node cha luôn trên node con, như vậy sẽ phải tác động tới ít nhất 2 đối tượng node, hai là tác động chỉ tới link, cụ thể là thuộc tính source và target của link do kéo node hay kéo link đều hiển thị như nhau -> ta sẽ tác động tới link trong bài này.
+
+#### Event ontick trong mối quan hệ giữa nodes và links:
+
+```javascript
+//vd về một object event với alpha giảm dần từ 0.9 -> 0.005
+Object { type: "tick", alpha: 0.005422585810406335 } 
+```
+
+'Tick' event sẽ chạy trong mỗi tích tắc của force. Listen tới các tick event sẽ cập nhật liên tục vị trí mới của nodes và links. Ví dụ, nếu ta có các node và link sau:
+
+```javascript
+let link = svg.selectAll('line')
+                .data(links)
+                .enter().append('line')
+let node = svg. selectAll('circle')
+                .data(nodes)
+                .enter().append('circle')
+                .attr('r',20)
+```
+
+Thì ta có thể thiết lập vị trí của chúng trong ontick event:
+
+```javascript
+force.on('tick',function (e) { //e là tick event, d là data
+    link.attr('x1', function (d) { return d.source.x })
+        .attr('y1', function (d) { return d.source.y })
+        .attr('x2', function (d) { return d.target.x })
+        .attr('y2', function (d) { return d.target.y })
+
+    // node.attr('cx', function (d) { return d.x })
+    //     .attr('cy', function (d) { return d.y })
+    // Có thể dùng một trong 2
+    node.attr('transform', function (d) {
+        return `translate( ${d.x} , ${d.y} )`
+    })   
+        
+})
+```
+
+Như vậy, ta đã lưu trữ các node và link vào trong quá trình khởi tạo và vì thế ta cũng không phải reselect các node trong mỗi tích tắc, d3 sẽ tự tính toán cho ta.
+
+#### Tham số alpha của force (e.alpha) và ý nghĩa của nó:
+
+e.alpha chính là tham số giảm tỏa nội tại của tick event, là tham số giảm dần động năng bên trong của layout. e.alpha sẽ giảm dần từ 0.9 về 0.005 trong lúc force.start() và khiến chuyển động của node và link từ từ chậm lại cho đến khi alpha = 0.005 thì dừng hẳn.
+
+k = e.alpha trong tick event thường được gọi là tham số tiêu điểm hay tham số đồng quy (foci). 
+
+Khi ta dùng k để tác động tới thuộc tính (x,y) của node theo một điểm đồng quy cố định thì các nốt được tạo sẽ 'chạy' về điểm đồng quy đó (search multi-foci). Khi ta dùng k để tác động tới thuộc tính source và target của link thì ta sẽ tạo được hướng ngắm tới điểm đồng quy cho link (search depth foci hay parent foci).
+
+Ví dụ khi thêm đoạn này vào trong bước 3-d của event ontick thì ta sẽ tạo được cây tập tin 'yếu' (weak tree). Theo code,đối với cây tập tin, link sẽ đi từ node root tới node branch hoặc node leaf tức là link chạy từ trên xuống và node cha ở trên, node con ở dưới, do cây có chiều thẳng đứng theo tung độ nên ta sẽ nâng tọa độ y của source và giảm tọa độ y của target của link vì thay đổi tọa độ của link thì cũng thay đổi luôn node như đã nói ở trên.
+
+```javascript
+// 0------->x
+// |
+// |
+// |
+// |
+// v y
+
+ function tick(e) {
+    link.each(function(d) {
+        //tạo ky theo alpha của mỗi node
+        let ky =  10 * e.alpha 
+        // để tạo hướng lên trên cho node cha, ta sẽ giảm tọa độ y của link
+        d.source.y -= ky // thay đổi thuộc tính source theo y
+        // để tạo hướng xuống dưới cho node con, ta sẽ tăng tọa độ y của link
+        d.target.y += ky //thay đổi thuộc tính target theo y
+    })
+    .attr(...)
+    //... phần còn lại
+}
+```
+
+- Kết quả ta sẽ được một cây tập tin 'yếu' với node cha sẽ ở trên và nốt con sẽ ở dưới. Source code trong file SimpleExample3.js
+
+![Somewhat Okay WeakTree](./images/WeakTree.png)
+
+#### Dùng tham số đồng quy 'k' để tạo cây tập tin có hướng đúng nghĩa.
+
+- Thực chất ta chỉ cần thay đổi thuộc tính target của link do các node luôn là một node target , tức luôn là một node con, chỉ có duy nhất một node cha là node root (dù là node source thì cũng bị target bới node source khác trừ node root). Thế nên ta sẽ thay đổi thuộc tính target của link làm cho nó luôn hướng xuống.
+
+```javascript
+// 
+// Hãy kiểm tra chỉ riêng kx hoặc ky để thấy rõ tác dụng của e.alpha
+//
+function tick(e) {
+    link.each(function(d) {
+        // tạo kx,ky theo alpha của mỗi node
+        let kx = 6 * e.alpha
+        let ky = 6 * e.alpha 
+
+        // Ngắm theo chiều x, đẩy tất cả các link đồng quy theo hướng thẳng 
+        d.target.x -= (d.source.x - d.target.x) * kx 
+
+        // Ngắm theo chiều y, đẩy tất cả các link đồng quy theo hướng ngang.
+        d.target.y += (d.source.y - d.target.y) * ky
+    })
+    .attr(...)
+    //... phần còn lại
+}
+```
+
+- Kết quả cho ta thấy hướng ngắm đồng quy của kx và ky
+
+![ox](./images/OnlyX.png)
+
+![oy](./images/OnlyY.png)
 
 
+- Khi ta để cả kx và ky như trên thì tất cả link sẽ ngắm tới trọng tâm của svg làm cho các node và link vừa đẩy nhau liên tục vừa hội tụ tại trọng tâm gây nên chuyển động loạn nhịp của cây tập tin, tuy nhiên nếu bạn 'bắt' được node root A thì ta sẽ thấy cây tập tin phần nào đã định hình được.
 
-- Tham số force.alpha và ý nghĩa của nó:
+![Round and Round Tree](./images/SpinningTree.png)
+
+- Cuối cùng, để cây không loạn nhịp, ta sẽ cố định node root bằng cách thêm thuộc tính ' "fixed":"true" ' và tăng khoảng cách d.target.y:
+
+```javascript
+function tick(e) {
+    link.each(function(d) {
+        // tạo kx,ky theo alpha của mỗi node
+        // giảm độ ngắm theo chiều thẳng đứng để tránh các link ép vào nhau
+        let kx = 0.6 * e.alpha 
+        let ky = 6 * e.alpha 
+
+        // Ngắm theo chiều x, đẩy tất cả các link đồng quy theo hướng thẳng 
+        d.target.x -= (d.source.x - d.target.x) * kx 
+
+        // Ngắm theo chiều y, đẩy tất cả các link đồng quy theo hướng ngang.
+        d.target.y += (d.source.y + 100 - d.target.y) * ky
+    })
+    .attr(...)
+    //... phần còn lại
+}
+```
+
+- Kết quả cuối cùng, source code tại file SimpleExample4.js
+
+![Last Tree Best Tree](./images/ForceDirectedTree.png)
