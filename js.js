@@ -61,8 +61,7 @@ function update() {
         .call(force.drag)
 
     nodeEnter.append('circle')
-
-    .attr('r', 4) //diagram of the circle
+        .attr('r', 4.5) //diagram of the circle
 
     // nodeEnter.append('text')
     //     .attr('dy', '0.35em')
@@ -88,12 +87,11 @@ function update() {
 
 //
 function tick(e) {
-    let kx = 0.4 * e.alpha
-    let ky = 3.4 * e.alpha
-    link
-        .each(function(d) {
+    let kx = 0.5 * e.alpha
+    let ky = 5* e.alpha
+    link.each(function(d) {
             d.target.x += (d.source.x - d.target.x) * kx
-            d.target.y += (d.source.y + 75 - d.target.y) * ky
+            d.target.y += (d.source.y + 100 - d.target.y) * ky
         })
         .attr('x1', function(d) {
             return d.source.x
